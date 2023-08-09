@@ -22,94 +22,105 @@ class TakePictureScreen extends StatefulWidget {
 class TakePictureScreenState extends State<TakePictureScreen> {
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
-
   List<String> capturedImages = [];
+
+  String photoStep =
+      "Front"; // Determines whether it's the Front or Back photo stage
+  bool isLoading = false; // To show a loading indicator
 
   @override
   void initState() {
     super.initState();
-    // To display the current output from the Camera,
-    // create a CameraController.
     _controller = CameraController(
-        // Get a specific camera from the list of available cameras.
-        widget.camera,
-        // Define the resolution to use.
-        ResolutionPreset.medium,
-        imageFormatGroup: ImageFormatGroup.yuv420);
-
-    // Next, initialize the controller. This returns a Future.
-    _initializeControllerFuture = _controller.initialize();
-  }
-
-  @override
-  void dispose() {
-    // Dispose of the controller when the widget is disposed.
-    _controller.dispose();
-    super.dispose();
+      widget.camera,
+      ResolutionPreset.medium,
+      imageFormatGroup: ImageFormatGroup.yuv420,
+    );
+      _initializeControllerFuture = _controller!.initialize();
   }
 
   @override
   Widget build(BuildContext context) {
-    // Fill this out in the next steps.
     return Scaffold(
       appBar: AppBar(title: const Text('Take a picture')),
-      // You must wait until the controller is initialized before displaying the
-      // camera preview. Use a FutureBuilder to display a loading spinner until the
-      // controller has finished initializing.
-      body: FutureBuilder<void>(
-        future: _initializeControllerFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            // If the Future is complete, display the preview.
-            return CameraPreview(_controller);
-          } else {
-            // Otherwise, display a loading indicator.
-            return const Center(child: CircularProgressIndicator());
-          }
-        },
+      body: Stack(
+        children: <Widget>[
+          FutureBuilder<void>(
+            future: _initializeControllerFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                return CameraPreview(_controller);
+              } else {
+                return const Center(child: CircularProgressIndicator());
+              }
+            },
+          ),
+          if (isLoading)
+            const Center(
+                child:
+                    CircularProgressIndicator()), // Display a loading indicator
+          Positioned(
+            top: 50.0,
+            left: 0.0,
+            right: 0.0,
+            child: Center(
+                child: Text(photoStep,
+                    style:
+                        TextStyle(fontSize: 30, fontWeight: FontWeight.bold))),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
-        // Provide an onPressed callback.
         onPressed: () async {
-          // Take the Picture in a try / catch block. If anything goes wrong,
-          // catch the error.
-          try {
-            // Ensure that the camera is initialized.
-            await _initializeControllerFuture;
-
-            // Attempt to take a picture and get the file `image`
-            // where it was saved.
-            final image = await _controller.takePicture();
-
-            if (!mounted) return;
-
-            capturedImages.add(image.path);
-
-            if (capturedImages.length == 2) {
-              await Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => DisplayPictureScreen(
-                    imagePaths: capturedImages,
-                  ),
-                ),
-              );
-              capturedImages.clear();
-            }
-          } catch (e) {
-            // If an error occurs, log the error to the console.
-            print(e);
+          if (!isLoading) {
+            await captureImage();
           }
         },
         child: const Icon(Icons.camera_alt),
       ),
     );
   }
+
+  Future<void> captureImage() async {
+    isLoading = true;
+    setState(() {});
+
+    await _initializeControllerFuture;
+    final image = await _controller.takePicture();
+
+    capturedImages.add(image.path); // Store the path of the captured image
+
+    if (!mounted) return;
+
+    if (photoStep == "Front") {
+      // Simulate a 2-second loading time after the first photo
+      await Future.delayed(Duration(seconds: 2));
+
+      // Prepare for the second photo
+      isLoading = false;
+      photoStep = "Back";
+      setState(() {});
+    } else if (photoStep == "Back") {
+      isLoading = false; // Reset loading state
+      setState(() {});
+
+      // Navigate to display both images
+      await Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => DisplayPictureScreen(
+            imagePaths: capturedImages,
+          ),
+        ),
+      );
+    }
+  }
 }
 
 class DisplayPictureScreen extends StatefulWidget {
   final List<String> imagePaths;
 
-  const DisplayPictureScreen({Key? key, required this.imagePaths}) : super(key: key);
+  const DisplayPictureScreen({Key? key, required this.imagePaths})
+      : super(key: key);
 
   @override
   _DisplayPictureScreenState createState() => _DisplayPictureScreenState();
@@ -124,14 +135,14 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
     for (String path in widget.imagePaths) {
       final image = pdfWidgets.MemoryImage(File(path).readAsBytesSync());
       pdf.addPage(pdfWidgets.Page(
-          build: (pdfWidgets.Context context) => pdfWidgets.Center(child: pdfWidgets.Image(image))
-      ));
+          build: (pdfWidgets.Context context) =>
+              pdfWidgets.Center(child: pdfWidgets.Image(image))));
     }
 
     final directory = await getApplicationDocumentsDirectory();
     final pdfFile = File("${directory.path}/output.pdf");
     await pdfFile.writeAsBytes(await pdf.save());
-    
+
     setState(() {
       _pdfPath = pdfFile.path;
     });
@@ -140,7 +151,6 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Display the Pictures')),
       body: Column(
         children: [
           Expanded(
@@ -156,9 +166,8 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
           ),
           if (_pdfPath != null)
             ElevatedButton(
-              onPressed: () => sendToServer(_pdfPath!),
-              child: const Text("Send PDF to server")
-            ),
+                onPressed: () => sendToServer(_pdfPath!),
+                child: const Text("Send PDF to server")),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -169,12 +178,13 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
   }
 }
 
-
 Future<void> sendToServer(String pdfPath) async {
   final pdfFile = File(pdfPath);
-  final request = http.MultipartRequest('POST', Uri.parse('YOUR_SERVER_ENDPOINT'));
-  request.files.add(await http.MultipartFile.fromPath('pdf_file', pdfFile.path));
-  
+  final request =
+      http.MultipartRequest('POST', Uri.parse('YOUR_SERVER_ENDPOINT'));
+  request.files
+      .add(await http.MultipartFile.fromPath('pdf_file', pdfFile.path));
+
   final response = await request.send();
 
   if (response.statusCode == 200) {
