@@ -36,49 +36,92 @@ class TakePictureScreenState extends State<TakePictureScreen> {
       ResolutionPreset.medium,
       imageFormatGroup: ImageFormatGroup.yuv420,
     );
-      _initializeControllerFuture = _controller!.initialize();
+    _initializeControllerFuture = _controller!.initialize();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Take a picture')),
       body: Stack(
         children: <Widget>[
           FutureBuilder<void>(
             future: _initializeControllerFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
-                return CameraPreview(_controller);
+                return Positioned.fill(
+                  child: AspectRatio(
+                    aspectRatio: 4 / 3,
+                    child: CameraPreview(_controller),
+                  ),
+                );
               } else {
                 return const Center(child: CircularProgressIndicator());
               }
             },
           ),
-          if (isLoading)
-            const Center(
-                child:
-                    CircularProgressIndicator()), // Display a loading indicator
+          Positioned.fill(
+            child: Opacity(
+              opacity: 0.3,
+              child: Container(
+                color: Colors.black,
+              ),
+            ),
+          ),
+          if (isLoading) const Center(child: CircularProgressIndicator()),
           Positioned(
-            top: 50.0,
+            top: 10.0,
             left: 0.0,
             right: 0.0,
             child: Center(
                 child: Text(photoStep,
-                    style:
-                        TextStyle(fontSize: 30, fontWeight: FontWeight.bold))),
+                    style: const TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                        shadows: [
+                          Shadow(
+                            blurRadius: 4.0,
+                            color: Colors.black,
+                            offset: Offset(2.0, 2.0),
+                          ),
+                        ]))),
           ),
+          Positioned(
+            bottom: 60,
+            left: 30,
+            child: FloatingActionButton(
+              child: Icon(Icons.arrow_back_ios_new_outlined),
+              onPressed: () => Navigator.of(context).pop(),
+              heroTag: null,
+            ),
+          ),
+          Positioned(
+            bottom: 50,
+            left: 170,
+            child: FloatingActionButton.large(
+              child: Icon(Icons.camera_alt),
+              onPressed: () async {
+                if (!isLoading) {
+                  await captureImage();
+                }
+              },
+              heroTag: null,
+            ),
+          )
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          if (!isLoading) {
-            await captureImage();
-          }
-        },
-        child: const Icon(Icons.camera_alt),
-      ),
     );
+  }
+
+  // Variables for button animation
+  double _scale = 1;
+  void _onTapDown(TapDownDetails details) {
+    _scale = 0.9;
+    setState(() {});
+  }
+
+  void _onTapUp(TapUpDetails details) {
+    _scale = 1;
+    setState(() {});
   }
 
   Future<void> captureImage() async {
