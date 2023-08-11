@@ -50,7 +50,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
               if (snapshot.connectionState == ConnectionState.done) {
                 return Positioned.fill(
                   child: AspectRatio(
-                    aspectRatio: 4 / 3,
+                    aspectRatio: _controller.value.aspectRatio,
                     child: CameraPreview(_controller),
                   ),
                 );
