@@ -11,9 +11,11 @@ class TakePictureScreen extends StatefulWidget {
   const TakePictureScreen({
     super.key,
     required this.camera,
+    required this.frontCamera,
   });
 
   final CameraDescription camera;
+  final CameraDescription frontCamera;
 
   @override
   TakePictureScreenState createState() => TakePictureScreenState();
@@ -42,34 +44,30 @@ class TakePictureScreenState extends State<TakePictureScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xffecf2ff),
       body: Stack(
         children: <Widget>[
           FutureBuilder<void>(
             future: _initializeControllerFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
-                return Positioned.fill(
-                  child: AspectRatio(
-                    aspectRatio: _controller.value.aspectRatio,
-                    child: CameraPreview(_controller),
-                  ),
+                return Center(
+                  child: CameraPreview(_controller!),
                 );
               } else {
                 return const Center(child: CircularProgressIndicator());
               }
             },
           ),
-          Positioned.fill(
-            child: Opacity(
-              opacity: 0.3,
-              child: Container(
-                color: Colors.black,
-              ),
+          Align(
+            alignment: Alignment.center,
+            child: IDCardSizedBox(
+              width: MediaQuery.of(context).size.width * 0.8,
             ),
           ),
           if (isLoading) const Center(child: CircularProgressIndicator()),
           Positioned(
-            top: 10.0,
+            top: 80.0,
             left: 0.0,
             right: 0.0,
             child: Center(
@@ -89,6 +87,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
             bottom: 60,
             left: 30,
             child: FloatingActionButton(
+              backgroundColor: Colors.lightBlueAccent,
               child: Icon(Icons.arrow_back_ios_new_outlined),
               onPressed: () => Navigator.of(context).pop(),
               heroTag: null,
@@ -98,6 +97,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
             bottom: 50,
             left: 170,
             child: FloatingActionButton.large(
+              backgroundColor: Colors.lightBlue,
               child: Icon(Icons.camera_alt),
               onPressed: () async {
                 if (!isLoading) {
@@ -208,13 +208,25 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
             ),
           ),
           if (_pdfPath != null)
-            ElevatedButton(
-                onPressed: () => sendToServer(_pdfPath!),
-                child: const Text("Send PDF to server")),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Container(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => sendToServer(_pdfPath!),
+                  child: const Text("Send PDF to server"),
+                  style: ButtonStyle(
+                      alignment: Alignment.center,
+                      backgroundColor:
+                          MaterialStateProperty.all<Color>(Colors.orange)),
+                ),
+              ),
+            )
         ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: generatePdf,
+        backgroundColor: Colors.orange,
         child: const Icon(Icons.picture_as_pdf),
       ),
     );
@@ -234,5 +246,30 @@ Future<void> sendToServer(String pdfPath) async {
     print('PDF uploaded successfully.');
   } else {
     print('Failed to upload PDF.');
+  }
+}
+
+class IDCardSizedBox extends StatelessWidget {
+  final double width;
+  final Color color;
+
+  IDCardSizedBox({required this.width, this.color = Colors.black})
+      : assert(width > 0);
+
+  @override
+  Widget build(BuildContext context) {
+    // Standard ID card aspect ratio (CR80: 3.375 in x 2.125 in)
+    const aspectRatio = 3.375 / 2.125;
+
+    return SizedBox(
+        width: width,
+        height: width / aspectRatio,
+        child: Container(
+          decoration: BoxDecoration(
+            border:
+                Border.all(color: color, width: 2, style: BorderStyle.solid),
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ));
   }
 }
