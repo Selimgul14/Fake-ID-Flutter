@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:mobile/view/frontCamera/frontCamera_view.dart';
 import 'package:pdf/widgets.dart' as pdfWidgets;
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
@@ -152,6 +153,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
         MaterialPageRoute(
           builder: (context) => DisplayPictureScreen(
             imagePaths: capturedImages,
+            frontCamera: widget.frontCamera,
           ),
         ),
       );
@@ -161,9 +163,13 @@ class TakePictureScreenState extends State<TakePictureScreen> {
 
 class DisplayPictureScreen extends StatefulWidget {
   final List<String> imagePaths;
+  final CameraDescription frontCamera;
 
-  const DisplayPictureScreen({Key? key, required this.imagePaths})
-      : super(key: key);
+  const DisplayPictureScreen({
+    Key? key,
+    required this.imagePaths,
+    required this.frontCamera,
+  }) : super(key: key);
 
   @override
   _DisplayPictureScreenState createState() => _DisplayPictureScreenState();
@@ -213,7 +219,14 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
               child: Container(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () => sendToServer(_pdfPath!),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              FaceCaptureView(frontCamera: widget.frontCamera)),
+                    );
+                  }, //sendToServer(_pdfPath!),
                   child: const Text("Send PDF to server"),
                   style: ButtonStyle(
                       alignment: Alignment.center,
