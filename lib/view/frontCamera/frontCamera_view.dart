@@ -4,6 +4,8 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:io';
 
+import 'package:mobile/view/card_reader/card_reader_view.dart';
+
 class FaceCaptureView extends StatefulWidget {
   const FaceCaptureView({
     super.key,
@@ -20,7 +22,7 @@ class _FaceCaptureViewState extends State<FaceCaptureView> {
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
 
-   @override
+  @override
   void initState() {
     super.initState();
     _controller = CameraController(
@@ -30,6 +32,7 @@ class _FaceCaptureViewState extends State<FaceCaptureView> {
     );
     _initializeControllerFuture = _controller!.initialize();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,6 +51,21 @@ class _FaceCaptureViewState extends State<FaceCaptureView> {
               }
             },
           ),
+          Positioned(
+            bottom: 50,
+            left: 0.0,
+            right: 0.0,
+            child: Padding(
+              padding: EdgeInsets.all(8.0),
+              child: FloatingActionButton.large(
+                onPressed: () async {
+                  //await Navigator.of(context).push(MaterialPageRoute(builder: (context)=> ReadID()));
+                },
+                backgroundColor: Colors.lightBlue,
+                child: Icon(Icons.camera_alt),
+              ),
+            ),
+          )
         ],
       ),
     );

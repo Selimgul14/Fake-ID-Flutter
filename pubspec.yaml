@@ -35,6 +35,15 @@ dependencies:
   path: 
   pdf:
   http:
+  google_fonts:
+  blinkid_flutter:
+  nfc_manager:
+  flutter_svg:
+  dmrtd:
+    git:
+      url: https://github.com/ZeroPass/dmrtd.git
+      ref: master
+
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

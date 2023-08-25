@@ -51,5 +51,9 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NFCReaderUsageDescription</key>
+	<string>Explanation on why NFC tag reading is needed.</string>
+	<key>com.apple.developer.nfc.readersession.felica.systemcodes</key>
+	<key>com.apple.developer.nfc.readersession.iso7816.select-identifiers</key>
 </dict>
 </plist>

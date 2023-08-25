@@ -6,6 +6,9 @@ import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:io';
+import 'package:google_fonts/google_fonts.dart';
+import 'dart:convert';
+import 'dart:typed_data';
 
 // A screen that allows users to take a picture using a given camera.
 class TakePictureScreen extends StatefulWidget {
@@ -72,17 +75,14 @@ class TakePictureScreenState extends State<TakePictureScreen> {
             left: 0.0,
             right: 0.0,
             child: Center(
-                child: Text(photoStep,
-                    style: const TextStyle(
-                        fontSize: 30,
-                        fontWeight: FontWeight.bold,
-                        shadows: [
-                          Shadow(
-                            blurRadius: 4.0,
-                            color: Colors.black,
-                            offset: Offset(2.0, 2.0),
-                          ),
-                        ]))),
+                child: Text(
+              photoStep,
+              style: GoogleFonts.poppins(
+                color: const Color.fromARGB(255, 59, 59, 61),
+                fontSize: 24,
+                fontWeight: FontWeight.w900,
+              ),
+            )),
           ),
           Positioned(
             bottom: 60,
@@ -182,6 +182,10 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
     final pdf = pdfWidgets.Document();
 
     for (String path in widget.imagePaths) {
+      File imagefile = File(path);
+      Uint8List imagebytes = await imagefile.readAsBytes();
+      String base64string = base64.encode(imagebytes);
+      print(base64string);
       final image = pdfWidgets.MemoryImage(File(path).readAsBytesSync());
       pdf.addPage(pdfWidgets.Page(
           build: (pdfWidgets.Context context) =>
@@ -219,15 +223,20 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
               child: Container(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {
+                  onPressed: () async {
+                    File imagefile = File(widget.imagePaths[0]);
+                    Uint8List imagebytes = await imagefile.readAsBytes();
+                    String base64string = base64.encode(imagebytes);
+                    print(base64string);
+                    //await sendImageToServer(base64string);
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (context) =>
                               FaceCaptureView(frontCamera: widget.frontCamera)),
                     );
-                  }, //sendToServer(_pdfPath!),
-                  child: const Text("Send PDF to server"),
+                  },
+                  child: const Text("Send image to server"),
                   style: ButtonStyle(
                       alignment: Alignment.center,
                       backgroundColor:
@@ -246,19 +255,18 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
   }
 }
 
-Future<void> sendToServer(String pdfPath) async {
-  final pdfFile = File(pdfPath);
-  final request =
-      http.MultipartRequest('POST', Uri.parse('YOUR_SERVER_ENDPOINT'));
-  request.files
-      .add(await http.MultipartFile.fromPath('pdf_file', pdfFile.path));
+Future<void> sendImageToServer(String base64Image) async {
+  var url = Uri.parse('http://46.101.238.61:8000/before_api/api/');
 
-  final response = await request.send();
+  var response = await http.post(url, body: {
+    'id_card_front': base64Image,
+    'id_card_back': base64Image,
+  });
 
   if (response.statusCode == 200) {
-    print('PDF uploaded successfully.');
+    print("Image sent successfully");
   } else {
-    print('Failed to upload PDF.');
+    print("Failed to send image: ${response.statusCode}");
   }
 }
 
@@ -280,9 +288,13 @@ class IDCardSizedBox extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             border:
-                Border.all(color: color, width: 2, style: BorderStyle.solid),
+                Border.all(color: color, width: 6, style: BorderStyle.solid),
             borderRadius: BorderRadius.circular(10),
           ),
         ));
   }
 }
+
+//ana sayfadaki kırmızı daire koyu gri gibi bir renk
+// buton turuncu tonları
+//kamera ekranındaki yukarı kısım ile aşağı kısım farklı renk yukarısı koyu
