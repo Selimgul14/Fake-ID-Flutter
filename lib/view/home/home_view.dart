@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:mobile/view/camera/camera_view.dart';
 import 'package:mobile/view/consent/consent_view.dart';
+import 'package:mobile/view/steps/steps_view.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -76,7 +77,7 @@ class _HomeState extends State<Home> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => ConsentPage(
+                              builder: (context) => StepsView(
                                     camera: firstCamera,
                                     frontCamera: frontCamera,
                                   )),

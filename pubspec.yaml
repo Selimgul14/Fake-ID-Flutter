@@ -42,10 +42,7 @@ dependencies:
   flutter_svg:
   flutter_platform_widgets:
   intl:
-  dmrtd:
-    git:
-      url: https://github.com/ZeroPass/dmrtd.git
-      ref: master
+  flutter_dash:
 
 
   # The following adds the Cupertino Icons font to your application.

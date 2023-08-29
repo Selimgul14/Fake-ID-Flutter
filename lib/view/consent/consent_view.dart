@@ -45,8 +45,8 @@ class _ConsentPageState extends State<ConsentPage> {
                       Image.asset('assets/images/idCard.jpg',
                           height:
                               150), // replace 'image.jpg' with your image name
-                      SizedBox(height: 20),
-                      Text(
+                      const SizedBox(height: 20),
+                      const Text(
                         'We will process your credentials for security verification purposes. In order for us to verify your ID card, you need to scan your card after taking a photo of the front and back of your ID.',
                         textAlign: TextAlign.center,
                       ),
@@ -55,7 +55,7 @@ class _ConsentPageState extends State<ConsentPage> {
                 ),
                 Row(
                   children: [
-                    Expanded(
+                    const Expanded(
                       child: Text(
                         'I consent to the processing of my personal data that I have given to FraudBusters only for the purpose of identity verification.',
                         style: TextStyle(fontSize: 12),

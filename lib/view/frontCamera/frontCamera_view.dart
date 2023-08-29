@@ -59,7 +59,6 @@ class _FaceCaptureViewState extends State<FaceCaptureView> {
               padding: EdgeInsets.all(8.0),
               child: FloatingActionButton.large(
                 onPressed: () async {
-                  await Navigator.of(context).push(MaterialPageRoute(builder: (context)=> ReadID()));
                 },
                 backgroundColor: Colors.lightBlue,
                 child: Icon(Icons.camera_alt),

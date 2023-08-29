@@ -5,8 +5,6 @@ PODS:
   - camera_avfoundation (0.0.1):
     - Flutter
   - Flutter (1.0.0)
-  - flutter_nfc_kit (2.0.0):
-    - Flutter
   - nfc_manager (0.0.1):
     - Flutter
   - path_provider_foundation (0.0.1):
@@ -18,7 +16,6 @@ DEPENDENCIES:
   - blinkid_flutter (from `.symlinks/plugins/blinkid_flutter/ios`)
   - camera_avfoundation (from `.symlinks/plugins/camera_avfoundation/ios`)
   - Flutter (from `Flutter`)
-  - flutter_nfc_kit (from `.symlinks/plugins/flutter_nfc_kit/ios`)
   - nfc_manager (from `.symlinks/plugins/nfc_manager/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/ios`)
 
@@ -33,8 +30,6 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/camera_avfoundation/ios"
   Flutter:
     :path: Flutter
-  flutter_nfc_kit:
-    :path: ".symlinks/plugins/flutter_nfc_kit/ios"
   nfc_manager:
     :path: ".symlinks/plugins/nfc_manager/ios"
   path_provider_foundation:
@@ -44,7 +39,6 @@ SPEC CHECKSUMS:
   blinkid_flutter: d4cb7f6a93a741132b1359b2e50f527811cf2775
   camera_avfoundation: 3125e8cd1a4387f6f31c6c63abb8a55892a9eeeb
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
-  flutter_nfc_kit: 965c98c3fa68f5609f1cc89abb968fe1b8ffdbaa
   nfc_manager: d7da7cb781f7744b94df5fe9dbca904ac4a0939e
   path_provider_foundation: 29f094ae23ebbca9d3d0cec13889cd9060c0e943
   PPBlinkID: c757baa64ed024141380a9a87048321215de9964
