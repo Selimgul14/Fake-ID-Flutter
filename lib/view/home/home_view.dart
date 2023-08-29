@@ -45,58 +45,65 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: const Color(0xffecf2ff),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text(
-                  'Welcome to FraudBusters',
+        body: Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+            image: AssetImage("assets/images/home_background.png"),
+            fit: BoxFit.cover),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SizedBox(
+                height: 10,
+              ),
+              Container(
+                  margin: EdgeInsets.all(50.0),
+                  decoration: BoxDecoration(
+                      color: Color(0xff60a4dc), shape: BoxShape.circle),
+                  child: SvgPicture.asset(assetName,
+                      width: 400, height: 400, fit: BoxFit.scaleDown)),
+              SizedBox(
+                height: 10,
+              ),
+              ElevatedButton(
+                onPressed: isCameraInitialized
+                    ? () {
+                        // Use firstCamera to open the camera view or perform other actions.
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ConsentPage(
+                                    camera: firstCamera,
+                                    frontCamera: frontCamera,
+                                  )),
+                        );
+                      }
+                    : null,
+                style: ButtonStyle(
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(32.0),
+                    )),
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(Color(0xff5aa5d8)),
+                    padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                        EdgeInsets.all(10))),
+                child: const Text(
+                  'Tap to become a customer',
                   style: TextStyle(
-                    fontSize: 26,
+                    fontSize: 24,
                     fontWeight: FontWeight.w900,
                   ),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                SvgPicture.asset(assetName),
-                SizedBox(
-                  height: 10,
-                ),
-                ElevatedButton(
-                  onPressed: isCameraInitialized
-                      ? () {
-                          // Use firstCamera to open the camera view or perform other actions.
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ConsentPage(
-                                      camera: firstCamera,
-                                      frontCamera: frontCamera,
-                                    )),
-                          );
-                        }
-                      : null,
-                  child: const Text(
-                    'Tap to start ID verification',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w900,
-                    ),
-                  ),
-                  style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all<Color>(
-                          Colors.lightBlueAccent),
-                      padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
-                          EdgeInsets.all(
-                              10))), // Disables the button if the camera isn't initialized.
-                ),
-              ],
-            ),
+                ), // Disables the button if the camera isn't initialized.
+              ),
+            ],
           ),
-        ));
+        ),
+      ),
+    ));
   }
 }

@@ -30,6 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+
   camera: 
   path_provider: 
   path: 
@@ -39,6 +40,8 @@ dependencies:
   blinkid_flutter:
   nfc_manager:
   flutter_svg:
+  flutter_platform_widgets:
+  intl:
   dmrtd:
     git:
       url: https://github.com/ZeroPass/dmrtd.git
