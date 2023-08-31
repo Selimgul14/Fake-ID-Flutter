@@ -43,6 +43,7 @@ dependencies:
   flutter_platform_widgets:
   intl:
   flutter_dash:
+  quickalert:
 
 
   # The following adds the Cupertino Icons font to your application.

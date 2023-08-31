@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:mobile/core/widgets/progress_indicator.dart';
 import 'package:mobile/view/frontCamera/frontCamera_view.dart';
 import 'package:pdf/widgets.dart' as pdfWidgets;
 import 'package:path_provider/path_provider.dart';
@@ -9,6 +10,7 @@ import 'dart:io';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:quickalert/quickalert.dart';
 
 // A screen that allows users to take a picture using a given camera.
 class TakePictureScreen extends StatefulWidget {
@@ -224,17 +226,28 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () async {
-                    File imagefile = File(widget.imagePaths[0]);
+                    DialogBuilder(context).showLoadingIndicator(
+                        "Please wait until your ID is processed. This process may take up to 20 seconds");
+                    await Future.delayed(const Duration(seconds: 5));
+                    DialogBuilder(context).hideOpenDialog();
+                    QuickAlert.show(
+                        context: context,
+                        type: QuickAlertType.loading,
+                        title: "Please wait",
+                        text: "We are checking your ID");
+                    /*File imagefile = File(widget.imagePaths[0]);
                     Uint8List imagebytes = await imagefile.readAsBytes();
-                    String base64string = base64.encode(imagebytes);
-                    print(base64string);
-                    //await sendImageToServer(base64string);
+                    String base64Front = base64.encode(imagebytes);
+                    imagefile = File(widget.imagePaths[1]);
+                    Uint8List imagebytes = await imagefile.readAsBytes();
+                    String base64Back = base64.encode(imagebytes);
+                    //await sendImageToServer(base64Front, base64Back);
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (context) =>
                               FaceCaptureView(frontCamera: widget.frontCamera)),
-                    );
+                    );*/
                   },
                   child: const Text("Send image to server"),
                   style: ButtonStyle(
@@ -255,15 +268,15 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
   }
 }
 
-Future<void> sendImageToServer(String base64Image) async {
+Future<void> sendImageToServer(String base64Front, String base64Back) async {
   var url = Uri.parse('http://46.101.238.61:8000/before_api/api/');
 
   var response = await http.post(url, body: {
-    'id_card_front': base64Image,
-    'id_card_back': base64Image,
+    'id_card_front': base64Front,
+    'id_card_back': base64Back,
   });
 
-  if (response.statusCode == 200) {
+  if (response.statusCode == 200 || response.statusCode == 201) {
     print("Image sent successfully");
   } else {
     print("Failed to send image: ${response.statusCode}");
@@ -294,7 +307,3 @@ class IDCardSizedBox extends StatelessWidget {
         ));
   }
 }
-
-//ana sayfadaki kırmızı daire koyu gri gibi bir renk
-// buton turuncu tonları
-//kamera ekranındaki yukarı kısım ile aşağı kısım farklı renk yukarısı koyu

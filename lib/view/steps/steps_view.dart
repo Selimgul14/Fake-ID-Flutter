@@ -28,13 +28,13 @@ class _StepsViewState extends State<StepsView> {
       ),
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(32.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               stepWidget(
                 icon: const Icon(Icons.checklist),
-                title: "KVKK",
+                title: "GDPR",
                 subtitle: "Read the text and give consent",
               ),
               const Dash(
@@ -56,7 +56,7 @@ class _StepsViewState extends State<StepsView> {
               ),
               stepWidget(
                 icon: const Icon(Icons.video_chat),
-                title: "Have a video call",
+                title: "Do a video call",
                 subtitle:
                     "To complete ID verification, have a video call with an agent",
               ),
