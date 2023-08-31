@@ -49,7 +49,7 @@ class _HomeState extends State<Home> {
         body: Container(
       decoration: BoxDecoration(
         image: DecorationImage(
-            image: AssetImage("assets/images/home_background.png"),
+            image: AssetImage("assets/images/background3.jpg"),
             fit: BoxFit.cover),
       ),
       child: Padding(
@@ -65,8 +65,11 @@ class _HomeState extends State<Home> {
                   margin: EdgeInsets.all(50.0),
                   decoration: BoxDecoration(
                       color: Color(0xff60a4dc), shape: BoxShape.circle),
-                  child: SvgPicture.asset(assetName,
-                      width: 400, height: 400, fit: BoxFit.scaleDown)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: SvgPicture.asset(assetName,
+                        width: 400, height: 400, fit: BoxFit.scaleDown),
+                  )),
               SizedBox(
                 height: 10,
               ),

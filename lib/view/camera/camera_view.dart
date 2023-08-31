@@ -90,7 +90,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
             bottom: 60,
             left: 30,
             child: FloatingActionButton(
-              backgroundColor: Colors.lightBlueAccent,
+              backgroundColor: Color(0xff5aa5d8),
               child: Icon(Icons.arrow_back_ios_new_outlined),
               onPressed: () => Navigator.of(context).pop(),
               heroTag: null,
@@ -100,7 +100,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
             bottom: 50,
             left: 170,
             child: FloatingActionButton.large(
-              backgroundColor: Colors.lightBlue,
+              backgroundColor: Color(0xff5aa5d8),
               child: Icon(Icons.camera_alt),
               onPressed: () async {
                 if (!isLoading) {
@@ -226,28 +226,43 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () async {
-                    DialogBuilder(context).showLoadingIndicator(
+                    /*DialogBuilder(context).showLoadingIndicator(
                         "Please wait until your ID is processed. This process may take up to 20 seconds");
                     await Future.delayed(const Duration(seconds: 5));
-                    DialogBuilder(context).hideOpenDialog();
-                    QuickAlert.show(
+                    DialogBuilder(context).hideOpenDialog();*/
+
+                    await QuickAlert.show(
+                        autoCloseDuration: const Duration(seconds: 10),
                         context: context,
                         type: QuickAlertType.loading,
                         title: "Please wait",
-                        text: "We are checking your ID");
+                        text:
+                            "We are checking your ID. \n This process may take up to 20 seconds.");
+
+                    if (context.mounted) {
+                      await QuickAlert.show(
+                          context: context,
+                          type: QuickAlertType.success,
+                          autoCloseDuration: const Duration(seconds: 5),
+                          showConfirmBtn: false,
+                          title: "Success!",
+                          text: "We have successfully verified your ID!");
+                    }
                     /*File imagefile = File(widget.imagePaths[0]);
                     Uint8List imagebytes = await imagefile.readAsBytes();
                     String base64Front = base64.encode(imagebytes);
                     imagefile = File(widget.imagePaths[1]);
                     Uint8List imagebytes = await imagefile.readAsBytes();
                     String base64Back = base64.encode(imagebytes);
-                    //await sendImageToServer(base64Front, base64Back);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              FaceCaptureView(frontCamera: widget.frontCamera)),
-                    );*/
+                    //await sendImageToServer(base64Front, base64Back);*/
+                    if (context.mounted) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => FaceCaptureView(
+                                frontCamera: widget.frontCamera)),
+                      );
+                    }
                   },
                   child: const Text("Send image to server"),
                   style: ButtonStyle(

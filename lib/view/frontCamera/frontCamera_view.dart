@@ -5,6 +5,9 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:mobile/view/card_reader/card_reader_view.dart';
+import 'package:mobile/view/home/home_view.dart';
+import 'package:quickalert/models/quickalert_type.dart';
+import 'package:quickalert/widgets/quickalert_dialog.dart';
 
 class FaceCaptureView extends StatefulWidget {
   const FaceCaptureView({
@@ -21,6 +24,7 @@ class FaceCaptureView extends StatefulWidget {
 class _FaceCaptureViewState extends State<FaceCaptureView> {
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
+  bool verified = true;
 
   @override
   void initState() {
@@ -59,6 +63,44 @@ class _FaceCaptureViewState extends State<FaceCaptureView> {
               padding: EdgeInsets.all(8.0),
               child: FloatingActionButton.large(
                 onPressed: () async {
+                  await QuickAlert.show(
+                      context: context,
+                      type: QuickAlertType.loading,
+                      title: "Please wait",
+                      text:
+                          "We are checking your photo. \n This process may take up to 20 seconds.",
+                      autoCloseDuration: Duration(seconds: 10));
+                  if (!verified) {
+                    if (context.mounted) {
+                      await QuickAlert.show(
+                          context: context,
+                          type: QuickAlertType.error,
+                          title: "We are unable to verify your photo",
+                          text:
+                              "Please take a photo again or go to the first step",
+                          showCancelBtn: true,
+                          showConfirmBtn: true,
+                          onConfirmBtnTap: () {
+                            Navigator.pop(context);
+                          },
+                          onCancelBtnTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => Home()),
+                            );
+                          });
+                    } else {
+                      if (context.mounted) {
+                        await QuickAlert.show(
+                            context: context,
+                            type: QuickAlertType.success,
+                            autoCloseDuration: Duration(seconds: 5),
+                            title: "Success!",
+                            text: "We have successfully verified your photo!");
+                      }
+                      // navigator push success page
+                    }
+                  }
                 },
                 backgroundColor: Colors.lightBlue,
                 child: Icon(Icons.camera_alt),
