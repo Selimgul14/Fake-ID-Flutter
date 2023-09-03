@@ -46,13 +46,8 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Container(
-      decoration: BoxDecoration(
-        image: DecorationImage(
-            image: AssetImage("assets/images/background3.jpg"),
-            fit: BoxFit.cover),
-      ),
-      child: Padding(
+      backgroundColor: Colors.lightBlue,
+      body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Center(
           child: Column(
@@ -108,6 +103,6 @@ class _HomeState extends State<Home> {
           ),
         ),
       ),
-    ));
+    );
   }
 }

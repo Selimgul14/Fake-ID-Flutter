@@ -226,35 +226,44 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () async {
-                    /*DialogBuilder(context).showLoadingIndicator(
-                        "Please wait until your ID is processed. This process may take up to 20 seconds");
-                    await Future.delayed(const Duration(seconds: 5));
-                    DialogBuilder(context).hideOpenDialog();*/
-
-                    await QuickAlert.show(
-                        autoCloseDuration: const Duration(seconds: 10),
-                        context: context,
-                        type: QuickAlertType.loading,
-                        title: "Please wait",
-                        text:
-                            "We are checking your ID. \n This process may take up to 20 seconds.");
-
-                    if (context.mounted) {
-                      await QuickAlert.show(
-                          context: context,
-                          type: QuickAlertType.success,
-                          autoCloseDuration: const Duration(seconds: 5),
-                          showConfirmBtn: false,
-                          title: "Success!",
-                          text: "We have successfully verified your ID!");
-                    }
-                    /*File imagefile = File(widget.imagePaths[0]);
+                    File imagefile = File(widget.imagePaths[0]);
                     Uint8List imagebytes = await imagefile.readAsBytes();
                     String base64Front = base64.encode(imagebytes);
                     imagefile = File(widget.imagePaths[1]);
-                    Uint8List imagebytes = await imagefile.readAsBytes();
+                    imagebytes = await imagefile.readAsBytes();
                     String base64Back = base64.encode(imagebytes);
-                    //await sendImageToServer(base64Front, base64Back);*/
+                    /*bool sent =
+                        await sendImageToServer(base64Front, base64Back);
+                    if (sent) {
+                      QuickAlert.show(
+                          autoCloseDuration: const Duration(seconds: 10),
+                          context: context,
+                          type: QuickAlertType.loading,
+                          title: "Please wait",
+                          text:
+                              "We are checking your ID. \n This process may take up to 20 seconds.");
+                      bool verified = await getResponse();
+                    } else {
+                      await QuickAlert.show(
+                          context: context,
+                          type: QuickAlertType.error,
+                          title: "Error!",
+                          text:
+                              "An error occured while sending your ID to the server.",
+                          showConfirmBtn: true,
+                          showCancelBtn: true,
+                          confirmBtnText: "Try again",
+                          cancelBtnText: "Go to Home Page");
+                    }
+*/
+                    await QuickAlert.show(
+                        context: context,
+                        type: QuickAlertType.success,
+                        autoCloseDuration: const Duration(seconds: 5),
+                        showConfirmBtn: false,
+                        title: "Success!",
+                        text: "We have successfully verified your ID!");
+
                     if (context.mounted) {
                       Navigator.push(
                         context,
@@ -264,11 +273,11 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
                       );
                     }
                   },
-                  child: const Text("Send image to server"),
+                  child: const Text("Confirm images and send for verification"),
                   style: ButtonStyle(
                       alignment: Alignment.center,
                       backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.orange)),
+                          MaterialStateProperty.all<Color>(Color(0xff5aa5d8))),
                 ),
               ),
             )
@@ -283,7 +292,7 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
   }
 }
 
-Future<void> sendImageToServer(String base64Front, String base64Back) async {
+Future<bool> sendImageToServer(String base64Front, String base64Back) async {
   var url = Uri.parse('http://46.101.238.61:8000/before_api/api/');
 
   var response = await http.post(url, body: {
@@ -293,8 +302,22 @@ Future<void> sendImageToServer(String base64Front, String base64Back) async {
 
   if (response.statusCode == 200 || response.statusCode == 201) {
     print("Image sent successfully");
+    return true;
   } else {
     print("Failed to send image: ${response.statusCode}");
+    return false;
+  }
+}
+
+Future<bool> getResponse() async {
+  var url = Uri.parse('http://46.101.238.61:8000/before_api/api/');
+
+  var response = await http.get(url);
+
+  if (response.statusCode == 200 || response.statusCode == 201) {
+    return true;
+  } else {
+    return false;
   }
 }
 

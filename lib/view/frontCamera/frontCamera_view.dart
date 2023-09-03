@@ -6,6 +6,7 @@ import 'dart:io';
 
 import 'package:mobile/view/card_reader/card_reader_view.dart';
 import 'package:mobile/view/home/home_view.dart';
+import 'package:mobile/view/success/success_view.dart';
 import 'package:quickalert/models/quickalert_type.dart';
 import 'package:quickalert/widgets/quickalert_dialog.dart';
 
@@ -63,6 +64,7 @@ class _FaceCaptureViewState extends State<FaceCaptureView> {
               padding: EdgeInsets.all(8.0),
               child: FloatingActionButton.large(
                 onPressed: () async {
+                  _controller.pausePreview();
                   await QuickAlert.show(
                       context: context,
                       type: QuickAlertType.loading,
@@ -90,17 +92,16 @@ class _FaceCaptureViewState extends State<FaceCaptureView> {
                             );
                           });
                     } else {
-                      if (context.mounted) {
-                        await QuickAlert.show(
-                            context: context,
-                            type: QuickAlertType.success,
-                            autoCloseDuration: Duration(seconds: 5),
-                            title: "Success!",
-                            text: "We have successfully verified your photo!");
-                      }
-                      // navigator push success page
+                      await QuickAlert.show(
+                          context: context,
+                          type: QuickAlertType.success,
+                          autoCloseDuration: Duration(seconds: 5),
+                          title: "Success!",
+                          text: "We have successfully verified your photo!");
                     }
                   }
+                  await Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => SuccessView()));
                 },
                 backgroundColor: Colors.lightBlue,
                 child: Icon(Icons.camera_alt),
