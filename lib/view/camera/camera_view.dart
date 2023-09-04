@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:mobile/core/constants.dart';
 import 'package:mobile/core/widgets/progress_indicator.dart';
 import 'package:mobile/view/frontCamera/frontCamera_view.dart';
+import 'package:mobile/view/home/home_view.dart';
 import 'package:pdf/widgets.dart' as pdfWidgets;
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
@@ -11,6 +13,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:quickalert/quickalert.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 // A screen that allows users to take a picture using a given camera.
 class TakePictureScreen extends StatefulWidget {
@@ -33,7 +36,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
   List<String> capturedImages = [];
 
   String photoStep =
-      "Front"; // Determines whether it's the Front or Back photo stage
+      "Kimliğinizin ön yüzünün fotoğrafını çekin"; // Determines whether it's the Front or Back photo stage
   bool isLoading = false; // To show a loading indicator
 
   @override
@@ -41,8 +44,9 @@ class TakePictureScreenState extends State<TakePictureScreen> {
     super.initState();
     _controller = CameraController(
       widget.camera,
-      ResolutionPreset.medium,
+      ResolutionPreset.high,
       imageFormatGroup: ImageFormatGroup.yuv420,
+      enableAudio: false,
     );
     _initializeControllerFuture = _controller!.initialize();
   }
@@ -50,7 +54,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xffecf2ff),
+      backgroundColor: Colors.white,
       body: Stack(
         children: <Widget>[
           FutureBuilder<void>(
@@ -73,21 +77,22 @@ class TakePictureScreenState extends State<TakePictureScreen> {
           ),
           if (isLoading) const Center(child: CircularProgressIndicator()),
           Positioned(
-            top: 80.0,
+            top: 120.0,
             left: 0.0,
             right: 0.0,
             child: Center(
                 child: Text(
               photoStep,
+              textAlign: TextAlign.center,
               style: GoogleFonts.poppins(
-                color: const Color.fromARGB(255, 59, 59, 61),
+                color: Colors.white,
                 fontSize: 24,
                 fontWeight: FontWeight.w900,
               ),
             )),
           ),
           Positioned(
-            bottom: 60,
+            bottom: 55,
             left: 30,
             child: FloatingActionButton(
               backgroundColor: Color(0xff5aa5d8),
@@ -97,7 +102,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
             ),
           ),
           Positioned(
-            bottom: 50,
+            bottom: 35,
             left: 170,
             child: FloatingActionButton.large(
               backgroundColor: Color(0xff5aa5d8),
@@ -134,19 +139,21 @@ class TakePictureScreenState extends State<TakePictureScreen> {
     await _initializeControllerFuture;
     final image = await _controller.takePicture();
 
-    capturedImages.add(image.path); // Store the path of the captured image
+    String fixedImagePath = await fixImageOrientation(image.path);
+
+    capturedImages.add(fixedImagePath); // Store the path of the captured image
 
     if (!mounted) return;
 
-    if (photoStep == "Front") {
+    if (photoStep == "Kimliğinizin ön yüzünün fotoğrafını çekin") {
       // Simulate a 2-second loading time after the first photo
       await Future.delayed(Duration(seconds: 2));
 
       // Prepare for the second photo
       isLoading = false;
-      photoStep = "Back";
+      photoStep = "Kimliğinizin arka yüzünün fotoğrafını çekin";
       setState(() {});
-    } else if (photoStep == "Back") {
+    } else if (photoStep == "Kimliğinizin arka yüzünün fotoğrafını çekin") {
       isLoading = false; // Reset loading state
       setState(() {});
 
@@ -154,6 +161,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
       await Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) => DisplayPictureScreen(
+            camera: widget.camera,
             imagePaths: capturedImages,
             frontCamera: widget.frontCamera,
           ),
@@ -166,21 +174,23 @@ class TakePictureScreenState extends State<TakePictureScreen> {
 class DisplayPictureScreen extends StatefulWidget {
   final List<String> imagePaths;
   final CameraDescription frontCamera;
+  final CameraDescription camera;
 
-  const DisplayPictureScreen({
-    Key? key,
-    required this.imagePaths,
-    required this.frontCamera,
-  }) : super(key: key);
+  const DisplayPictureScreen(
+      {Key? key,
+      required this.imagePaths,
+      required this.frontCamera,
+      required this.camera})
+      : super(key: key);
 
   @override
   _DisplayPictureScreenState createState() => _DisplayPictureScreenState();
 }
 
 class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
-  String? _pdfPath;
+  //String? _pdfPath;
 
-  Future<void> generatePdf() async {
+  /*Future<void> generatePdf() async {
     final pdf = pdfWidgets.Document();
 
     for (String path in widget.imagePaths) {
@@ -201,11 +211,27 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
     setState(() {
       _pdfPath = pdfFile.path;
     });
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color(0xff5aa5d8),
+        title: Text("Önizleme"),
+        leading: IconButton(
+            icon: Icon(Icons.arrow_back_ios),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => TakePictureScreen(
+                          camera: widget.camera,
+                          frontCamera: widget.frontCamera,
+                        )),
+              );
+            }),
+      ),
       body: Column(
         children: [
           Expanded(
@@ -219,81 +245,154 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
               },
             ),
           ),
-          if (_pdfPath != null)
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Container(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () async {
-                    File imagefile = File(widget.imagePaths[0]);
-                    Uint8List imagebytes = await imagefile.readAsBytes();
-                    String base64Front = base64.encode(imagebytes);
-                    imagefile = File(widget.imagePaths[1]);
-                    imagebytes = await imagefile.readAsBytes();
-                    String base64Back = base64.encode(imagebytes);
-                    /*bool sent =
-                        await sendImageToServer(base64Front, base64Back);
-                    if (sent) {
-                      QuickAlert.show(
-                          autoCloseDuration: const Duration(seconds: 10),
-                          context: context,
-                          type: QuickAlertType.loading,
-                          title: "Please wait",
-                          text:
-                              "We are checking your ID. \n This process may take up to 20 seconds.");
-                      bool verified = await getResponse();
-                    } else {
-                      await QuickAlert.show(
-                          context: context,
-                          type: QuickAlertType.error,
-                          title: "Error!",
-                          text:
-                              "An error occured while sending your ID to the server.",
-                          showConfirmBtn: true,
-                          showCancelBtn: true,
-                          confirmBtnText: "Try again",
-                          cancelBtnText: "Go to Home Page");
-                    }
-*/
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Container(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () async {
+                  File imagefile = File(widget.imagePaths[0]);
+                  Uint8List imagebytes = await imagefile.readAsBytes();
+                  String base64Front = base64.encode(imagebytes);
+                  imagefile = File(widget.imagePaths[1]);
+                  imagebytes = await imagefile.readAsBytes();
+                  String base64Back = base64.encode(imagebytes);
+                  final internetConnection =
+                      await InternetAddress.lookup("example.com");
+                  if (internetConnection.isNotEmpty &&
+                      internetConnection[0].rawAddress.isNotEmpty) {
+                    await QuickAlert.show(
+                        autoCloseDuration: const Duration(seconds: 10),
+                        context: context,
+                        type: QuickAlertType.loading,
+                        title: "Lütfen Bekleyin",
+                        text:
+                            "Kimliğinizi kontrol ediyoruz. \n Bu işlem 20 saniyeye kadar sürebilir.");
                     await QuickAlert.show(
                         context: context,
                         type: QuickAlertType.success,
                         autoCloseDuration: const Duration(seconds: 5),
                         showConfirmBtn: false,
-                        title: "Success!",
-                        text: "We have successfully verified your ID!");
+                        title: "Başarılı!",
+                        text: "Kimliğiniz başarıyla doğrulandı!");
+                  } else {
+                    await QuickAlert.show(
+                      context: context,
+                      type: QuickAlertType.error,
+                      title: "Hata!",
+                      text: "Kimliğinizi sunucuya gönderirken bir hata oluştu.",
+                      showConfirmBtn: true,
+                      showCancelBtn: true,
+                      confirmBtnText: "Tekrar dene",
+                      onConfirmBtnTap: () async {
+                        await QuickAlert.show(
+                            autoCloseDuration: const Duration(seconds: 10),
+                            context: context,
+                            type: QuickAlertType.loading,
+                            title: "Lütfen Bekleyin",
+                            text:
+                                "Kimliğinizi kontrol ediyoruz. \n Bu işlem 20 saniyeye kadar sürebilir.");
+                        await QuickAlert.show(
+                            context: context,
+                            type: QuickAlertType.success,
+                            autoCloseDuration: const Duration(seconds: 5),
+                            showConfirmBtn: false,
+                            title: "Başarılı!",
+                            text: "Kimliğiniz başarıyla doğrulandı!");
+                      },
+                      cancelBtnText: "Ana sayfa",
+                      onCancelBtnTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Home()),
+                        );
+                      },
+                    );
+                  }
 
-                    if (context.mounted) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => FaceCaptureView(
-                                frontCamera: widget.frontCamera)),
-                      );
+                  /*bool sent = await sendImageToServer(base64Front, base64Back);
+                  if (sent) {
+                    await QuickAlert.show(
+                        autoCloseDuration: const Duration(seconds: 10),
+                        context: context,
+                        type: QuickAlertType.loading,
+                        title: "Lütfen Bekleyin",
+                        text:
+                            "Kimliğinizi kontrol ediyoruz. \n Bu işlem 20 saniyeye kadar sürebilir.");
+                    bool verified = await getResponse();
+                    if (verified) {
+                      await QuickAlert.show(
+                          context: context,
+                          type: QuickAlertType.success,
+                          autoCloseDuration: const Duration(seconds: 5),
+                          showConfirmBtn: false,
+                          title: "Başarılı!",
+                          text: "Kimliğiniz başarıyla doğrulandı!");
+                    } else {
+                      await QuickAlert.show(
+                          context: context,
+                          type: QuickAlertType.error,
+                          showConfirmBtn: true,
+                          title: "Hata!",
+                          text:
+                              "Kimliğinizi doğrulayamadık. Lütfen kimliğinizin fotoğrafını tekrar çekin!",
+                          onConfirmBtnTap: () {});
                     }
-                  },
-                  child: const Text("Confirm images and send for verification"),
-                  style: ButtonStyle(
-                      alignment: Alignment.center,
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(Color(0xff5aa5d8))),
-                ),
+                  } else {
+                    await QuickAlert.show(
+                        context: context,
+                        type: QuickAlertType.error,
+                        title: "Hata!",
+                        text:
+                            "Kimliğinizi sunucuya gönderirken bir hata oluştu.",
+                        showConfirmBtn: true,
+                        showCancelBtn: true,
+                        confirmBtnText: "Tekrar dene",
+                        cancelBtnText: "Ana sayfa");
+                  }*/
+
+                  if (context.mounted) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              FaceCaptureView(frontCamera: widget.frontCamera)),
+                    );
+                  }
+                },
+                child:
+                    const Text("Fotoğrafları onayla ve doğrulama için gönder"),
+                style: ButtonStyle(
+                    alignment: Alignment.center,
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(Color(0xff5aa5d8))),
               ),
-            )
+            ),
+          )
         ],
       ),
-      floatingActionButton: FloatingActionButton(
+      /*floatingActionButton: FloatingActionButton(
         onPressed: generatePdf,
         backgroundColor: Colors.orange,
         child: const Icon(Icons.picture_as_pdf),
-      ),
+      ),*/
     );
   }
 }
 
+Future<String> fixImageOrientation(String path) async {
+  final Uint8List imageBytes = await File(path).readAsBytes();
+  final Uint8List? rotatedImage =
+      await FlutterImageCompress.compressWithList(imageBytes, rotate: 0);
+
+  final File rotatedFile = File(path);
+  await rotatedFile.writeAsBytes(rotatedImage!);
+
+  return rotatedFile.path;
+}
+
 Future<bool> sendImageToServer(String base64Front, String base64Back) async {
-  var url = Uri.parse('http://46.101.238.61:8000/before_api/api/');
+  var url = Uri.parse('${ApplicationConstants.BASE_URL}/before_api/api/');
 
   var response = await http.post(url, body: {
     'id_card_front': base64Front,
@@ -310,7 +409,7 @@ Future<bool> sendImageToServer(String base64Front, String base64Back) async {
 }
 
 Future<bool> getResponse() async {
-  var url = Uri.parse('http://46.101.238.61:8000/before_api/api/');
+  var url = Uri.parse('${ApplicationConstants.BASE_URL}/before_api/api/');
 
   var response = await http.get(url);
 

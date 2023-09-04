@@ -18,21 +18,30 @@ class SuccessView extends StatelessWidget {
               ),
               SizedBox(height: 20),
               Text(
-                'You have successfully verified your identity.',
+                'Kimliğinizi başarıyla doğruladınız!',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
               ),
               SizedBox(height: 10),
               Text(
-                'You can now open an account in our bank.',
+                'Bankamızda hesap açabilirsiniz.',
                 style: TextStyle(fontSize: 18.0),
               ),
               SizedBox(height: 30),
               ElevatedButton(
+                style: ButtonStyle(
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(32.0),
+                    )),
+                    backgroundColor:
+                        MaterialStateProperty.all<Color>(Color(0xff5aa5d8)),
+                    padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
+                        EdgeInsets.all(10))),
                 onPressed: () {
                   // You can navigate to another page here, or do something else
                 },
-                child: Text('Continue'),
+                child: Text('Devam'),
               ),
             ],
           ),

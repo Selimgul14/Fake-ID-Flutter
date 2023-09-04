@@ -46,25 +46,35 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.lightBlue,
+      backgroundColor: const Color(0xffecf2ff),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Text(
+                "Secure ID Detector",
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 32,
+                    color: Color(0xff5aa5d8)),
+              ),
+              Text(
+                "SID",
+                style: TextStyle(
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xff5aa5d8),
+                    fontSize: 24),
+              ),
               SizedBox(
                 height: 10,
               ),
-              Container(
-                  margin: EdgeInsets.all(50.0),
-                  decoration: BoxDecoration(
-                      color: Color(0xff60a4dc), shape: BoxShape.circle),
-                  child: Padding(
-                    padding: const EdgeInsets.all(24.0),
-                    child: SvgPicture.asset(assetName,
-                        width: 400, height: 400, fit: BoxFit.scaleDown),
-                  )),
+              Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: SvgPicture.asset(assetName,
+                    width: 400, height: 400, fit: BoxFit.scaleDown),
+              ),
               SizedBox(
                 height: 10,
               ),
@@ -92,9 +102,9 @@ class _HomeState extends State<Home> {
                     padding: MaterialStateProperty.all<EdgeInsetsGeometry>(
                         EdgeInsets.all(10))),
                 child: const Text(
-                  'Tap to become a customer',
+                  'Müşterimiz olmak için dokunun',
                   style: TextStyle(
-                    fontSize: 24,
+                    fontSize: 22,
                     fontWeight: FontWeight.w900,
                   ),
                 ), // Disables the button if the camera isn't initialized.

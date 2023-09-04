@@ -47,7 +47,7 @@ class _ConsentPageState extends State<ConsentPage> {
                               150), // replace 'image.jpg' with your image name
                       const SizedBox(height: 20),
                       const Text(
-                        'We will process your credentials for security verification purposes. In order for us to verify your ID card, you need to scan your card after taking a photo of the front and back of your ID.',
+                        'Kimlik bilgilerinizi güvenlik doğrulaması yapmak amacıyla işleyeceğiz. Kimlik kartınızı doğrulayabilmemiz için kimliğinizin ön ve arka yüzünün fotoğrafını çekmeniz gerekmektedir..',
                         textAlign: TextAlign.center,
                       ),
                     ],
@@ -57,7 +57,7 @@ class _ConsentPageState extends State<ConsentPage> {
                   children: [
                     const Expanded(
                       child: Text(
-                        'I consent to the processing of my personal data that I have given to FraudBusters only for the purpose of identity verification.',
+                        'FraudBusters\'a vermiş olduğum özel nitelikli kişisel verilerimin sadece kimlik doğrulaması yapmak amacıyla işlenmesine izin veriyorum.',
                         style: TextStyle(fontSize: 12),
                       ),
                     ),
@@ -74,7 +74,7 @@ class _ConsentPageState extends State<ConsentPage> {
                 Container(
                   width: double.infinity,
                   child: ElevatedButton(
-                    child: Text('Start ID Verification'),
+                    child: Text('Kimlik Doğrulamayı Başlatın'),
                     style: ButtonStyle(
                         shape:
                             MaterialStateProperty.all<RoundedRectangleBorder>(

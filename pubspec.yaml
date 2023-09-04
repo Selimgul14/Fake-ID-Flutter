@@ -44,6 +44,7 @@ dependencies:
   intl:
   flutter_dash:
   quickalert:
+  flutter_image_compress:
 
 
   # The following adds the Cupertino Icons font to your application.

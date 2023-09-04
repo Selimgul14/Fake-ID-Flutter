@@ -9,6 +9,7 @@ import 'package:mobile/view/home/home_view.dart';
 import 'package:mobile/view/success/success_view.dart';
 import 'package:quickalert/models/quickalert_type.dart';
 import 'package:quickalert/widgets/quickalert_dialog.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class FaceCaptureView extends StatefulWidget {
   const FaceCaptureView({
@@ -32,7 +33,7 @@ class _FaceCaptureViewState extends State<FaceCaptureView> {
     super.initState();
     _controller = CameraController(
       widget.frontCamera,
-      ResolutionPreset.medium,
+      ResolutionPreset.high,
       imageFormatGroup: ImageFormatGroup.yuv420,
     );
     _initializeControllerFuture = _controller!.initialize();
@@ -68,18 +69,18 @@ class _FaceCaptureViewState extends State<FaceCaptureView> {
                   await QuickAlert.show(
                       context: context,
                       type: QuickAlertType.loading,
-                      title: "Please wait",
+                      title: "Lütfen Bekleyin",
                       text:
-                          "We are checking your photo. \n This process may take up to 20 seconds.",
+                          "Fotoğrafınızı kontrol ediyoruz. \n Bu işlem 20 saniyeye kadar sürebilir.",
                       autoCloseDuration: Duration(seconds: 10));
                   if (!verified) {
                     if (context.mounted) {
                       await QuickAlert.show(
                           context: context,
                           type: QuickAlertType.error,
-                          title: "We are unable to verify your photo",
+                          title: "Fotoğrafınızı doğrulayamadık",
                           text:
-                              "Please take a photo again or go to the first step",
+                              "Tekrar fotoğraf çekin ya da ana ekrana geri dönün",
                           showCancelBtn: true,
                           showConfirmBtn: true,
                           onConfirmBtnTap: () {
@@ -96,8 +97,8 @@ class _FaceCaptureViewState extends State<FaceCaptureView> {
                           context: context,
                           type: QuickAlertType.success,
                           autoCloseDuration: Duration(seconds: 5),
-                          title: "Success!",
-                          text: "We have successfully verified your photo!");
+                          title: "Başarılı!",
+                          text: "Fotoğrafınız başarıyla doğrulandı!");
                     }
                   }
                   await Navigator.of(context).push(
@@ -107,7 +108,25 @@ class _FaceCaptureViewState extends State<FaceCaptureView> {
                 child: Icon(Icons.camera_alt),
               ),
             ),
-          )
+          ),
+          Positioned(
+            top: 120.0,
+            left: 0.0,
+            right: 0.0,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Center(
+                  child: Text(
+                "Aydınlık bir ortamda yüzünüz tam gözükecek şekilde fotoğraf çekiniz",
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.w800,
+                ),
+              )),
+            ),
+          ),
         ],
       ),
     );

@@ -23,7 +23,7 @@ class _StepsViewState extends State<StepsView> {
     return Scaffold(
       backgroundColor: Color(0xffecf2ff),
       appBar: AppBar(
-        title: Text("Become a customer"),
+        title: Text("Müşterimiz olun"),
         backgroundColor: Color(0xff386fa4),
       ),
       body: Center(
@@ -34,8 +34,8 @@ class _StepsViewState extends State<StepsView> {
             children: [
               stepWidget(
                 icon: const Icon(Icons.checklist),
-                title: "GDPR",
-                subtitle: "Read the text and give consent",
+                title: "KVKK",
+                subtitle: "KVKK metnini okuyup onay verin",
               ),
               const Dash(
                 direction: Axis.vertical,
@@ -45,8 +45,9 @@ class _StepsViewState extends State<StepsView> {
               ),
               stepWidget(
                 icon: const Icon(Icons.badge),
-                title: "Scan your ID",
-                subtitle: "Scan your ID via your phone's camera",
+                title: "Kimliğinizi taratın",
+                subtitle:
+                    "Telefonunuzun kamerası ile kimliğinizin fotoğrafını çekin",
               ),
               const Dash(
                 direction: Axis.vertical,
@@ -56,9 +57,9 @@ class _StepsViewState extends State<StepsView> {
               ),
               stepWidget(
                 icon: const Icon(Icons.video_chat),
-                title: "Do a video call",
+                title: "Video görüşmesi yapın",
                 subtitle:
-                    "To complete ID verification, have a video call with an agent",
+                    "Kimlik doğrulamayı tamamlamak için, müşteri temsilcimizle video görüşmesi yapın",
               ),
               const SizedBox(height: 70),
               SizedBox(
@@ -83,7 +84,7 @@ class _StepsViewState extends State<StepsView> {
                               )),
                     );
                   },
-                  child: Text("Continue"),
+                  child: Text("Devam"),
                 ),
               ),
             ],
