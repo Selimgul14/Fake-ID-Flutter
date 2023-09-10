@@ -26,7 +26,7 @@ class FaceCaptureView extends StatefulWidget {
 class _FaceCaptureViewState extends State<FaceCaptureView> {
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
-  bool verified = true;
+  bool verified = false;
 
   @override
   void initState() {
@@ -94,11 +94,14 @@ class _FaceCaptureViewState extends State<FaceCaptureView> {
                           });
                     } else {
                       await QuickAlert.show(
-                          context: context,
-                          type: QuickAlertType.success,
-                          autoCloseDuration: Duration(seconds: 5),
-                          title: "Başarılı!",
-                          text: "Fotoğrafınız başarıyla doğrulandı!");
+                        context: context,
+                        type: QuickAlertType.error,
+                        showConfirmBtn: true,
+                        confirmBtnText: "Tekrar Dene",
+                        title: "Hata!",
+                        text:
+                            "Fotoğrafınızı doğrulayamadık. Lütfen yüzünüzü kapatan bir engel bulunmadığından emin olunuz ve aydınlık bir ortamda tekrar fotoğraf çekiniz!",
+                      );
                     }
                   }
                   await Navigator.of(context).push(

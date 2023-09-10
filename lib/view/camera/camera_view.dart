@@ -251,13 +251,16 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
               width: double.infinity,
               child: ElevatedButton(
                 onPressed: () async {
+                  AppState appState = AppState();
                   File imagefile = File(widget.imagePaths[0]);
                   Uint8List imagebytes = await imagefile.readAsBytes();
                   String base64Front = base64.encode(imagebytes);
                   imagefile = File(widget.imagePaths[1]);
                   imagebytes = await imagefile.readAsBytes();
                   String base64Back = base64.encode(imagebytes);
-                  final internetConnection =
+                  print(base64Front);
+                  print(base64Back);
+                 final internetConnection =
                       await InternetAddress.lookup("example.com");
                   if (internetConnection.isNotEmpty &&
                       internetConnection[0].rawAddress.isNotEmpty) {
@@ -268,6 +271,25 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
                         title: "Lütfen Bekleyin",
                         text:
                             "Kimliğinizi kontrol ediyoruz. \n Bu işlem 20 saniyeye kadar sürebilir.");
+                    if (!appState.hasPressedButtonOnce) {
+                      await QuickAlert.show(
+                          context: context,
+                          type: QuickAlertType.error,
+                          showConfirmBtn: true,
+                          confirmBtnText: "Tekrar Dene",
+                          title: "Hata!",
+                          text:
+                              "Kimliğinizi doğrulayamadık. Lütfen kimliğinizin fotoğrafını tekrar çekin!",
+                          onConfirmBtnTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => TakePictureScreen(
+                                        camera: widget.camera,
+                                        frontCamera: widget.frontCamera)));
+                            appState.hasPressedButtonOnce = true;
+                          });
+                    } else {
                     await QuickAlert.show(
                         context: context,
                         type: QuickAlertType.success,
@@ -275,6 +297,9 @@ class _DisplayPictureScreenState extends State<DisplayPictureScreen> {
                         showConfirmBtn: false,
                         title: "Başarılı!",
                         text: "Kimliğiniz başarıyla doğrulandı!");
+                    }
+
+
                   } else {
                     await QuickAlert.show(
                       context: context,
@@ -443,4 +468,15 @@ class IDCardSizedBox extends StatelessWidget {
           ),
         ));
   }
+}
+
+class AppState {
+  static final AppState _instance = AppState._internal();
+  bool hasPressedButtonOnce = false;
+
+  factory AppState() {
+    return _instance;
+  }
+
+  AppState._internal();
 }
